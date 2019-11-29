@@ -1,10 +1,14 @@
 package top.shaojie.rabbit.mq.demo.confirm;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmListener;
 import com.rabbitmq.client.Connection;
 import top.shaojie.rabbit.mq.demo.utils.ConnectionUtils;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -14,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class Send3 {
 
-    private static final String QUEUE = "test_queue_confirm2";
+    private static final String QUEUE = "test_queue_confirm3";
 
     public static void main(String[] args) throws IOException, TimeoutException {
         // 获取连接
@@ -36,28 +40,40 @@ public class Send3 {
          *  transaction 模式和 confirm 不能同时使用 否则可能会出错
          */
         channel.confirmSelect();
-        // 发送的信息
-        String message = "hello transaction TxSelect";
-        for (int i = 0; i < 10; i++) {
-            // 发送信息
-            /**
-             * exchange 将消息发布到的交换机
-             * routingKey 路由键
-             * props 消息的其他属性-路由标头等
-             * body 发送的信息主体 byte[] 数组
-             */
-            channel.basicPublish("", QUEUE, null, message.getBytes());
-        }
-        try {
-            if (!channel.waitForConfirms()) {
-                System.out.println("-send message failed");
-            } else {
-                System.out.println("-send message:" + message);
+        // 未确认的信息标识
+        final SortedSet<Long> confirmSet = Collections.synchronizedSortedSet(new TreeSet<Long>());
+        // 通道添加监听
+        channel.addConfirmListener(new ConfirmListener() {
+            // 没有问题的 handleAck
+            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                if (multiple) {
+                    System.out.println("----handleAck----multiple true");
+                    confirmSet.headSet(deliveryTag + 1).clear();
+                } else {
+                    System.out.println("----handleAck----multiple false");
+                    confirmSet.remove(deliveryTag);
+                }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+            // 发送失败的
+            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                if (multiple) {
+                    System.out.println("----handleNack----multiple true");
+                    confirmSet.headSet(deliveryTag + 1).clear();
+                } else {
+                    System.out.println("----handleNack----multiple false");
+                    confirmSet.remove(deliveryTag);
+                }
+            }
+        });
+        // 发送的信息
+        String message = "hello transaction confirm";
+
+        while (true) {
+            long seqNo = channel.getNextPublishSeqNo();
+            channel.basicPublish("", QUEUE, null, message.getBytes());
+            confirmSet.add(seqNo);
         }
-        channel.close();
-        connection.close();
+
     }
 }
