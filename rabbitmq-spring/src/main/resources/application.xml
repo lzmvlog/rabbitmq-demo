@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation=
+               "http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/rabbit
+	    http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 配置连接工厂 -->
+    <!-- host 连接地址 port 连接端口 username  password  virtual-host  host="127.0.0.1" port="5672" -->
+    <rabbit:connection-factory id="connectionFactory"  username="ShaoJie" password="123456" addresses="127.0.0.1:5672"
+                               virtual-host="/test"/>
+
+    <!-- 定义模版 -->
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" queue="test_simple"/>
+
+    <!-- 定义mq管理 队列交换机声明等-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!-- 声明队列 -->
+    <rabbit:queue name="test_simple" id="queue" />
+
+    <!-- 定义交换机绑定队列（路由模式） -->
+    <!--    <rabbit:direct-exchange name="IExchange" id="IExchange">-->
+
+    <!--    </rabbit:direct-exchange>-->
+
+    <!-- 消费者 -->
+    <bean id="receive" class="com.shaojie.rabbit.mq.demo.Receive"/>
+
+    <!-- 队列定义监听 -->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="receive" method="listen" queue-names="test_simple"/>
+    </rabbit:listener-container>
+
+</beans>

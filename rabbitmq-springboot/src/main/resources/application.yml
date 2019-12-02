@@ -7,10 +7,9 @@ spring:
     port: 5672
     username: ShaoJie
     password: 123456
-    virtual-host: test
+    virtual-host: /test
 #   简写上述的连接
 #    addresses:
 
 server:
   port: 8090
-

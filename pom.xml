@@ -10,8 +10,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>rabbitmq-spring</module>
+        <module>rabbitmq-springboot</module>
         <module>rabbitmq-simple</module>
+        <module>rabbitmq-spring</module>
     </modules>
 
 </project>
