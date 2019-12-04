@@ -14,7 +14,7 @@ public class Send {
     public static void main(String[] args) throws InterruptedException {
         AbstractApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
         RabbitTemplate template = context.getBean(RabbitTemplate.class);
-        String message = "spring - rabbit";
+        String message = "spring - rabbitmq";
         template.convertAndSend("hello " + message);
         System.out.println("send message success");
         Thread.sleep(1000);
