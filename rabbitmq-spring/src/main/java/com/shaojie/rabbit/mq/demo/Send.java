@@ -16,8 +16,7 @@ public class Send {
         RabbitTemplate template = context.getBean(RabbitTemplate.class);
         String message = "spring - rabbitmq";
         template.convertAndSend("hello " + message);
-        System.out.println("send message success");
-        Thread.sleep(1000);
+        System.out.println("-send message :" + message);
         // 销毁容器
         context.close();
     }

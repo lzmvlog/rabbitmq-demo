@@ -1,15 +1,15 @@
+server:
+  port: 8090
+
 spring:
   application:
     name: rabbit-spring
 
   rabbitmq:
-    host: 127.0.0.1
-    port: 5672
+#    host: 127.0.0.1
+#    port: 5672
+#   简写上述的连接
+    addresses: 127.0.0.1:5672
     username: ShaoJie
     password: 123456
     virtual-host: /test
-#   简写上述的连接
-#    addresses:
-
-server:
-  port: 8090

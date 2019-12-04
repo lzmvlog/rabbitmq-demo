@@ -22,7 +22,7 @@
 
     <!-- 配置连接工厂 -->
     <!-- host 连接地址 port 连接端口 username  password  virtual-host  host="127.0.0.1" port="5672" -->
-    <rabbit:connection-factory id="connectionFactory"  username="ShaoJie" password="123456" addresses="127.0.0.1:5672"
+    <rabbit:connection-factory id="connectionFactory" username="ShaoJie" password="123456" addresses="127.0.0.1:5672"
                                virtual-host="/test"/>
 
     <!-- 定义模版 -->
@@ -32,7 +32,7 @@
     <rabbit:admin connection-factory="connectionFactory"/>
 
     <!-- 声明队列 -->
-    <rabbit:queue name="test_simple" id="queue" />
+    <rabbit:queue name="test_simple"/>
 
     <!-- 定义交换机绑定队列（路由模式） -->
     <!--    <rabbit:direct-exchange name="IExchange" id="IExchange">-->
